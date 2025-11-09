@@ -55,6 +55,9 @@ Use uvx directly in your MCP client config
             "run",
             "amq-mcp-server-rabbitmq",
             "--allow-mutative-tools"
+            "--amq-hostname", "localhost",
+            "--amq-username", "guest",
+            "--amq-password", "guest"
         ]
       }
     }
@@ -115,11 +118,18 @@ See [example/amazon_q_cli](example/amazon_q_cli) for configuration examples with
 git clone https://github.com/amazon-mq/mcp-server-rabbitmq.git
 cd mcp-server-rabbitmq
 
+# Install dependencies, including development dependencies
+uv pip install -e ".[dev]"
+
 # Install pre-commit hooks
 pre-commit install
 ```
 
 ### Running Tests
+
+This project uses `pytest` for testing. The tests are located in the `src/tests` directory and are all unit tests, so they can be run without a running RabbitMQ instance.
+
+To run the tests, use the following command from the root of the project:
 
 ```bash
 pytest
@@ -137,6 +147,42 @@ ruff check .
 ruff format .
 ```
 
+### Manual Testing
+
+You can manually test the MCP server from the command line by sending JSON-RPC messages to its standard input.
+
+1.  **Start the server**
+
+    ```bash
+    uv run amq-mcp-server-rabbitmq --allow-mutative-tools
+    ```
+
+2.  **List available tools**
+
+    Send the following JSON-RPC message to the server's standard input.
+
+    ```json
+    {"jsonrpc": "2.0", "method": "mcp_list_tools", "id": 1}
+    ```
+
+3.  **Connect to a RabbitMQ broker and list queues**
+
+    First, connect to the broker by sending the following message. Make sure to replace the connection details with your own if they are different.
+
+    ```json
+    {"jsonrpc": "2.0", "method": "rabbitmq_broker_initialize_connection", "params": {"broker_hostname": "localhost", "username": "guest", "password": "guest", "port": 15672, "management_port": 15672, "use_tls": false}, "id": 2}
+    ```
+
+    Then, you can call other tools, for example, to list the queues:
+
+    ```json
+    {"jsonrpc": "2.0", "method": "rabbitmq_broker_list_queues", "params": {}, "id": 3}
+    ```
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+
+
+uv run amq-mcp-server-rabbitmq --allow-mutative-tools --amq-hostname localhost --amq-username guest --amqpassword guest
+│

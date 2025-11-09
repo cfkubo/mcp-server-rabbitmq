@@ -19,14 +19,14 @@ from src.rabbitmq.connection import RabbitMQConnection, validate_rabbitmq_name
 
 class TestRabbitMQConnection:
     def test_init_with_tls(self):
-        conn = RabbitMQConnection("localhost", "user", "pass", use_tls=True)
+        conn = RabbitMQConnection("localhost", "user", "pass", port=5671, use_tls=True)
         assert conn.protocol == "amqps"
         assert "amqps://user:pass@localhost:5671" == conn.url
 
     def test_init_without_tls(self):
-        conn = RabbitMQConnection("localhost", "user", "pass", use_tls=False)
+        conn = RabbitMQConnection("localhost", "user", "pass")
         assert conn.protocol == "amqp"
-        assert "amqp://user:pass@localhost:5671" == conn.url
+        assert "amqp://user:pass@localhost:5672" == conn.url
 
 
 class TestValidateRabbitMQName:

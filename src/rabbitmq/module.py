@@ -18,6 +18,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
+from loguru import logger
 from .admin import RabbitMQAdmin
 from .connection import RabbitMQConnection, validate_rabbitmq_name
 from .handlers import (
@@ -66,6 +67,7 @@ class RabbitMQModule:
             username: str,
             password: str,
             port: int = 5671,
+            management_port: int = 15671,
             use_tls: bool = True,
         ) -> str:
             """Connect to a new RabbitMQ broker which authentication strategy is SIMPLE.
@@ -86,6 +88,8 @@ class RabbitMQModule:
                     hostname=broker_hostname,
                     username=username,
                     password=password,
+                    port=management_port,
+                    use_tls=use_tls,
                 )
                 self.rmq_admin.test_connection()
                 return "successfully connected"
@@ -96,6 +100,9 @@ class RabbitMQModule:
         def rabbitmq_broker_initialize_connection_with_oauth(
             broker_hostname: str,
             oauth_token: str,
+            port: int = 5671,
+            management_port: int = 15671,
+            use_tls: bool = True,
         ) -> str:
             """Connect to a new RabbitMQ broker using OAuth. It only applies to RabbitMQ broker which authentication strategy is config_managed.
 
@@ -107,11 +114,15 @@ class RabbitMQModule:
                     hostname=broker_hostname,
                     username="ignored",
                     password=oauth_token,
+                    port=port,
+                    use_tls=use_tls,
                 )
                 self.rmq_admin = RabbitMQAdmin(
                     hostname=broker_hostname,
                     username="ignored",
                     password=oauth_token,
+                    port=management_port,
+                    use_tls=use_tls,
                 )
                 self.rmq_admin.test_connection()
                 return "successfully connected"

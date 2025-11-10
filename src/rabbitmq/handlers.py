@@ -199,6 +199,18 @@ def handle_purge_queue(rabbitmq_admin: RabbitMQAdmin, queue: str, vhost: str = "
     rabbitmq_admin.purge_queue(queue, vhost)
 
 
+def handle_create_queue(
+    rabbitmq_admin: RabbitMQAdmin,
+    queue: str,
+    vhost: str = "/",
+    durable: bool = True,
+    auto_delete: bool = False,
+    arguments: dict | None = None,
+) -> None:
+    """Create a queue in the RabbitMQ server."""
+    rabbitmq_admin.create_queue(queue, vhost, durable, auto_delete, arguments)
+
+
 ## Exchanges
 
 

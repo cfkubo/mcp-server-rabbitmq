@@ -63,6 +63,18 @@ class TestRabbitMQAdmin:
         mock_request.assert_called_once()
 
     @patch("src.rabbitmq.admin.requests.request")
+    def test_create_queue(self, mock_request, admin, mock_response):
+        mock_request.return_value = mock_response
+        admin.create_queue("new-queue", durable=False, auto_delete=True, arguments={"x-message-ttl": 1000})
+        mock_request.assert_called_once_with(
+            "PUT",
+            "http://localhost:15672/api/queues/%2F/new-queue",
+            headers=admin.headers,
+            json={"durable": False, "auto_delete": True, "arguments": {"x-message-ttl": 1000}},
+            verify=True,
+        )
+
+    @patch("src.rabbitmq.admin.requests.request")
     def test_list_exchanges(self, mock_request, admin, mock_response):
         mock_request.return_value = mock_response
         result = admin.list_exchanges()

@@ -107,6 +107,20 @@ class RabbitMQAdmin:
         vhost_encoded = quote(vhost, safe="")
         self._make_request("DELETE", f"exchanges/{vhost_encoded}/{exchange}")
 
+    def create_queue(
+        self,
+        queue: str,
+        vhost: str = "/",
+        durable: bool = True,
+        auto_delete: bool = False,
+        arguments: Optional[dict] = None,
+    ) -> None:
+        """Create a queue."""
+        validate_rabbitmq_name(queue, "Queue name")
+        vhost_encoded = quote(vhost, safe="")
+        data = {"durable": durable, "auto_delete": auto_delete, "arguments": arguments or {}}
+        self._make_request("PUT", f"queues/{vhost_encoded}/{queue}", data=data)
+
     def get_bindings(
         self, queue: Optional[str] = None, exchange: Optional[str] = None, vhost: str = "/"
     ) -> list[dict]:

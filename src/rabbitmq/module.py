@@ -303,6 +303,24 @@ class RabbitMQModule:
                 raise e
 
         @self.mcp.tool()
+        def rabbitmq_broker_create_queue(
+            queue: str,
+            vhost: str = "/",
+            durable: bool = True,
+            auto_delete: bool = False,
+            arguments: dict | None = None,
+        ) -> str:
+            """Create a specific queue."""
+            try:
+                if self.rmq_admin is None:
+                    raise AssertionError("RabbitMQ admin endpoints not connected.")
+                validate_rabbitmq_name(queue, "Queue name")
+                handle_create_queue(self.rmq_admin, queue, vhost, durable, auto_delete, arguments)
+                return f"Queue {queue} successfully created"
+            except Exception as e:
+                raise e
+
+        @self.mcp.tool()
         def rabbitmq_broker_purge_queue(queue: str, vhost: str = "/") -> str:
             """Remove all messages from a specific queue."""
             try:

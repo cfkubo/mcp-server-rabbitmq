@@ -14,6 +14,7 @@
 # This file is part of the awslabs namespace.
 # It is intentionally minimal to support PEP 420 namespace packages.
 
+import os
 import ssl
 from typing import Any
 
@@ -24,7 +25,13 @@ class RabbitMQConnection:
     """RabbitMQ connection manager for message operations."""
 
     def __init__(
-        self, hostname: str, username: str, password: str, port: int = 5672, use_tls: bool = False
+        self,
+        hostname: str,
+        username: str,
+        password: str,
+        port: int = int(os.getenv("RABBITMQ_PORT", 5672)),
+        use_tls: bool = os.getenv("RABBITMQ_USE_TLS", "false").lower() == "true",
+        verify_ssl: bool = True,
     ):
         """Initialize RabbitMQ connection parameters."""
         host = hostname
@@ -33,6 +40,9 @@ class RabbitMQConnection:
         self.parameters = pika.URLParameters(self.url)
         if use_tls:
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            if not verify_ssl:
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
             self.parameters.ssl_options = pika.SSLOptions(context=ssl_context)
 
     def get_channel(self) -> tuple[Any, Any]:

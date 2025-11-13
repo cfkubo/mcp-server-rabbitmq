@@ -97,7 +97,7 @@ stdio_mcp_client = MCPClient(lambda: stdio_client(
 with stdio_mcp_client:
     tools = stdio_mcp_client.list_tools_sync()
     agent = Agent(tools=tools)
-    
+
     while True:
         user_input = input("\nYou: ").strip()
         if not user_input or user_input.lower() in ["exit", "quit"]:
@@ -184,7 +184,7 @@ You can manually test the MCP server from the command line by sending JSON-RPC m
 This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
 
-uv run amq-mcp-server-rabbitmq --allow-mutative-tools --amq-hostname localhost --amq-username guest --amqpassword guest
+ uv run amq-mcp-server-rabbitmq --allow-mutative-tools --no-auth  --http
 
 
 ![image](static/l1.png)

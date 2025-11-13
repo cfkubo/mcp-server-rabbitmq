@@ -14,6 +14,7 @@
 # This file is part of the awslabs namespace.
 # It is intentionally minimal to support PEP 420 namespace packages.
 
+import os
 import base64
 from typing import Any, Optional
 from urllib.parse import quote
@@ -32,8 +33,9 @@ class RabbitMQAdmin:
         hostname: str,
         username: str,
         password: str,
-        port: int = 15672,
-        use_tls: bool = False,
+        port: int = int(os.getenv("RABBITMQ_MANAGEMENT_PORT", 15672)),
+        use_tls: bool = os.getenv("RABBITMQ_USE_TLS", "false").lower() == "true",
+        verify_ssl: bool = True, # Added verify_ssl parameter
     ):
         """Initialize RabbitMQ admin client."""
         host = hostname
@@ -41,13 +43,14 @@ class RabbitMQAdmin:
         self.base_url = f"{self.protocol}://{host}:{port}/api"
         self.auth = base64.b64encode(f"{username}:{password}".encode()).decode()
         self.headers = {"Authorization": f"Basic {self.auth}", "Content-Type": "application/json"}
+        self.verify_ssl = verify_ssl # Store verify_ssl
 
     def _make_request(
         self, method: str, endpoint: str, data: Optional[dict] = None
     ) -> requests.Response:
         """Make HTTP request to RabbitMQ API."""
         url = f"{self.base_url}/{endpoint}"
-        response = requests.request(method, url, headers=self.headers, json=data, verify=True)
+        response = requests.request(method, url, headers=self.headers, json=data, verify=self.verify_ssl) # Use self.verify_ssl
         response.raise_for_status()
         return response
 

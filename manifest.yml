@@ -1,0 +1,24 @@
+applications:
+- name: mcp-server-rabbitmq
+  path: .
+  buildpacks:
+  - python_buildpack
+  command: python -m src.server --allow-mutative-tools --http --server-port $PORT --no-auth
+  memory: 256M
+  disk_quota: 1G
+  instances: 1
+  env:
+    FASTMCP_LOG_LEVEL: INFO
+    # Placeholder for RabbitMQ connection details or other service bindings
+    RABBITMQ_BROKER_HOSTNAME: rmq-3a4b23c7-d097-4c9e-9aee-2c9b8064cb00.sys.tas-ndc.kuhn-labs.com
+    RABBITMQ_USERNAME: 430600fb-63b5-4731-9a18-ec95c5c133b7
+    RABBITMQ_PASSWORD: fTTjOtMzEfK5rC6aD96uWoyl
+    RABBITMQ_MANAGEMENT_PORT: 443
+    RABBITMQ_USE_TLS: true
+    RABBITMQ_VERIFY_SSL: false
+    # HTTP_AUTH_JWKS_URI: <your-jwks-uri>
+    # HTTP_AUTH_ISSUER: <your-issuer>
+    # HTTP_AUTH_AUDIENCE: <your-audience>
+    # HTTP_AUTH_REQUIRED_SCOPES: <your-scopes>
+  # services:
+  #   - mcp-chat-app-service # Replace with the actual service name if it's a marketplace service

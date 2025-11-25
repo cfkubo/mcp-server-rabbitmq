@@ -67,6 +67,7 @@ class RabbitMQModule:
             password: str,
             port: int = 5671,
             use_tls: bool = True,
+            verify_ssl: bool = True,
         ) -> str:
             """Connect to a new RabbitMQ broker which authentication strategy is SIMPLE.
 
@@ -81,11 +82,14 @@ class RabbitMQModule:
                     password=password,
                     port=port,
                     use_tls=use_tls,
+                    verify_ssl=verify_ssl,
                 )
                 self.rmq_admin = RabbitMQAdmin(
                     hostname=broker_hostname,
                     username=username,
                     password=password,
+                    use_tls=use_tls,
+                    verify_ssl=verify_ssl,
                 )
                 self.rmq_admin.test_connection()
                 return "successfully connected"
@@ -120,7 +124,7 @@ class RabbitMQModule:
 
         @self.mcp.tool()
         def rabbitmq_broker_get_guideline(guideline_name: str) -> str:
-            """Get the general best practices for deploying RabbitMQ on Amazon MQ.
+            """Get the general best practices for deploying RabbitMQ on RabbitMQ.
 
             - guideline_name: It can take the following value:
                 - rabbimq_broker_sizing_guide : this guide tells the customer what instance size to pick for production workload

@@ -1,24 +1,24 @@
-# Best practices for broker setup and connection management in Amazon MQ for RabbitMQ - Amazon MQ
+# Best practices for broker setup and connection management in RabbitMQ for RabbitMQ - RabbitMQ
 
 ###### Important
 
-Amazon MQ for RabbitMQ does not support the username "guest", and will delete the default guest account when you create a new broker. Amazon MQ will also periodically delete any customer created account called "guest".
+RabbitMQ for RabbitMQ does not support the username "guest", and will delete the default guest account when you create a new broker. RabbitMQ will also periodically delete any customer created account called "guest".
 
 ## Step 1: Use cluster deployments
 
 For production workloads, we recommend using cluster deployments instead of single-instance brokers to ensure high availability and message resiliency. Cluster deployments remove single points of failure and provide better fault tolerance.
 
-Cluster deployments consist of three RabbitMQ broker nodes distributed across three Availability Zones, providing automatic failover and ensuring operations continue even if an entire Availability Zone becomes unavailable. Amazon MQ automatically replicates messages across all nodes to ensure availability during node failures or maintenance.
+Cluster deployments consist of three RabbitMQ broker nodes distributed across three Availability Zones, providing automatic failover and ensuring operations continue even if an entire Availability Zone becomes unavailable. RabbitMQ automatically replicates messages across all nodes to ensure availability during node failures or maintenance.
 
-Cluster deployments are essential for production environments and are supported by the [Amazon MQ Service Level Agreement](https://aws.amazon.com/https://aws.amazon.com/amazon-mq/sla/).
+Cluster deployments are essential for production environments and are supported by the [RabbitMQ Service Level Agreement](https://aws.amazon.com/https://aws.amazon.com/amazon-mq/sla/).
 
-For more information, see [Cluster deployment in Amazon MQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/rabbitmq-broker-architecture.html#rabbitmq-broker-architecture-cluster).
+For more information, see [Cluster deployment in RabbitMQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/rabbitmq-broker-architecture.html#rabbitmq-broker-architecture-cluster).
 
 ## Step 2: Choose the correct broker instance type
 
 The message throughput of a broker instance type depends on your application use case. `M7g.medium` should only be used for testing application performance. Using this smaller instance before using larger instances in production can improve application performance. On instance types `m7g.large` and above, you can use cluster deployments for high availability and message durability. Larger broker instance types can handle production levels of clients and queues, high throughput, messages in memory, and redundant messages.
 
-For more information on choosing the correct instance type, see [Sizing guidelines in Amazon MQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/rabbitmq-sizing-guidelines.html).
+For more information on choosing the correct instance type, see [Sizing guidelines in RabbitMQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/rabbitmq-sizing-guidelines.html).
 
 ## Step 3: Use quorum queues
 
@@ -28,7 +28,7 @@ Quorum queues use the Raft consensus algorithm to provide better fault tolerance
 
 To declare a quorum queue, set the header `x-queue-type` to `quorum` when creating your queues.
 
-For more information on quorum queues, including migration strategies and best practices, see [Quorum queues in Amazon MQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/quorum-queues.html).
+For more information on quorum queues, including migration strategies and best practices, see [Quorum queues in RabbitMQ for RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/quorum-queues.html).
 
 ## Step 4: Use multiple channels
 
@@ -36,7 +36,7 @@ To avoid connection churn, use multiple channels over a single connection. Appli
 
 
 
-# Best practices for message durability and reliability in Amazon MQ for RabbitMQ
+# Best practices for message durability and reliability in RabbitMQ for RabbitMQ
 
 Before moving your application to production, complete the following best practices for preventing message loss and resource overutilization.
 
@@ -100,9 +100,9 @@ You can configure `consumer_timeout` to detect when consumers do not acknowledge
 
 ## Step 3: Keep queues short
 
-In cluster deployments, queues with a large number of messages can lead to resource overutilization. When a broker is overutilized, rebooting an Amazon MQ for RabbitMQ broker can cause further degradation of performance. If rebooted, overutilized brokers might become unresponsive in the `REBOOT_IN_PROGRESS` state.
+In cluster deployments, queues with a large number of messages can lead to resource overutilization. When a broker is overutilized, rebooting an RabbitMQ for RabbitMQ broker can cause further degradation of performance. If rebooted, overutilized brokers might become unresponsive in the `REBOOT_IN_PROGRESS` state.
 
-During [maintenance windows](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-rabbitmq-editing-broker-preferences.html#rabbitmq-edit-current-configuration-console), Amazon MQ performs all maintenance work one node at a time to ensure that the broker remains operational. As a result, queues might need to synchronize as each node resumes operation. During synchronization, messages that need to be replicated to mirrors are loaded into memory from the corresponding Amazon Elastic Block Store (Amazon EBS) volume to be processed in batches. Processing messages in batches lets queues synchronize faster.
+During [maintenance windows](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-rabbitmq-editing-broker-preferences.html#rabbitmq-edit-current-configuration-console), RabbitMQ performs all maintenance work one node at a time to ensure that the broker remains operational. As a result, queues might need to synchronize as each node resumes operation. During synchronization, messages that need to be replicated to mirrors are loaded into memory from the corresponding Amazon Elastic Block Store (Amazon EBS) volume to be processed in batches. Processing messages in batches lets queues synchronize faster.
 
 If queues are kept short and messages are small, the queues successfully synchronize and resume operation as expected. However, if the amount of data in a batch approaches the node's memory limit, the node raises a high memory alarm, pausing the queue sync. You can confirm memory usage by comparing the `RabbitMemUsed` and `RabbitMqMemLimit`[broker node metrics in CloudWatch](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-accessing-metrics.html). Synchronization can't complete until messages are consumed or deleted, or the number of messages in the batch is reduced.
 

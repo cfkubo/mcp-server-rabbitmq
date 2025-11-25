@@ -1,4 +1,4 @@
-# Best practices for performance optimization and efficiency in Amazon MQ for RabbitMQ - Amazon MQ
+# Best practices for performance optimization and efficiency in RabbitMQ for RabbitMQ - RabbitMQ
 
 ## Step 1: Keep message sizes under 1 MB
 
@@ -10,9 +10,9 @@ RabbitMQ 3.13 supports message sizes up to 128 MB by default, but large messages
 
 To manage large messages, you can implement the claim check pattern by storing the message payload in external storage and sending only the payload reference identifier through RabbitMQ. The consumer uses the payload reference identifier to retrieve and process the large message.
 
-The following diagram demonstrates how to use Amazon MQ for RabbitMQ and Amazon S3 to implement the claim check pattern.
+The following diagram demonstrates how to use RabbitMQ for RabbitMQ and Amazon S3 to implement the claim check pattern.
 
-The following example demonstrates this pattern using Amazon MQ, the [AWS SDK for Java 2.x](https://docs.aws.amazon.com/https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html), and [Amazon S3](https://docs.aws.amazon.com/https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html):
+The following example demonstrates this pattern using RabbitMQ, the [AWS SDK for Java 2.x](https://docs.aws.amazon.com/https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html), and [Amazon S3](https://docs.aws.amazon.com/https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html):
 
 1.  First, define a Message class that will hold the Amazon S3 reference identifier.
 
@@ -104,7 +104,7 @@ In the RabbitMQ Java client library, the default value for the `global` flag is 
 
 ## Step 4: Use Celery 5.5 or later with quorum queues
 
-[Python Celery](https://docs.celeryq.dev/en/stable/index.html), a distributed task queue system, can generate many non-critical messages when experiencing high task load. This additional broker activity can trigger [Amazon MQ for RabbitMQ: High memory alarm](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/troubleshooting-action-required-codes-rabbitmq-memory-alarm.html) and lead to broker unavailability. To reduce the chance of triggering memory alarm, do the following:
+[Python Celery](https://docs.celeryq.dev/en/stable/index.html), a distributed task queue system, can generate many non-critical messages when experiencing high task load. This additional broker activity can trigger [RabbitMQ for RabbitMQ: High memory alarm](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/troubleshooting-action-required-codes-rabbitmq-memory-alarm.html) and lead to broker unavailability. To reduce the chance of triggering memory alarm, do the following:
 
 **For all Celery versions**
 
@@ -121,7 +121,7 @@ In the RabbitMQ Java client library, the default value for the `global` flag is 
 
 **For Celery versions 5.5 and above**
 
-1.  Upgrade to [Celery version 5.5](https://docs.celeryq.dev/en/latest/changelog.html#version-5-5-0), the minimum version that supports quorum queues, or a later version. To check what version of Celery you are using, use `celery --version`. For more information on quorum queues, see [Quorum queues for RabbitMQ on Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/quorum-queues.html).
+1.  Upgrade to [Celery version 5.5](https://docs.celeryq.dev/en/latest/changelog.html#version-5-5-0), the minimum version that supports quorum queues, or a later version. To check what version of Celery you are using, use `celery --version`. For more information on quorum queues, see [Quorum queues for RabbitMQ on RabbitMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/quorum-queues.html).
 
 2.  After upgrading to Celery 5.5 or later, configure `task_default_queue_type` to ["quorum"](https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_default_queue_type).
 

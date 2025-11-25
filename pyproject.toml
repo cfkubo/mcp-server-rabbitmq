@@ -25,7 +25,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "readabilipy>=0.2.0",
     "requests>=2.32.3",
-    "fastmcp>=2.7.1",
+    "fastmcp>=2.8.0",
     "loguru>=0.7.3",
 ]
 

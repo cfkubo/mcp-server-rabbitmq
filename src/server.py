@@ -34,17 +34,18 @@ class RabbitMQMCPServer:
         self.logger.info(f"Starting RabbitMQ MCP Server v{MCP_SERVER_VERSION}")
 
         if args.http:
-            if args.http_auth_jwks_uri == "":
-                raise ValueError("Please set --http-auth-jwks-uri")
-            self.mcp.auth = BearerAuthProvider(
-                jwks_uri=args.http_auth_jwks_uri,
-                issuer=args.http_auth_issuer,
-                audience=args.http_auth_audience,
-                required_scopes=args.http_auth_required_scopes,
-            )
+            if not args.no_auth:
+                if not args.http_auth_jwks_uri:
+                    raise ValueError("Please set --http-auth-jwks-uri or use --no-auth")
+                self.mcp.auth = BearerAuthProvider(
+                    jwks_uri=args.http_auth_jwks_uri,
+                    issuer=args.http_auth_issuer,
+                    audience=args.http_auth_audience,
+                    required_scopes=args.http_auth_required_scopes,
+                )
             self.mcp.run(
                 transport="streamable-http",
-                host="127.0.0.1",
+                host="0.0.0.0",
                 port=args.server_port,
                 path="/mcp",
             )
@@ -65,7 +66,12 @@ def main():
     # Streamable HTTP specific configuration
     parser.add_argument("--http", action="store_true", help="Use Streamable HTTP transport")
     parser.add_argument(
-        "--server-port", type=int, default=8888, help="Port to run the MCP server on"
+        "--no-auth",
+        action="store_true",
+        help="Disable authentication for HTTP transport",
+    )
+    parser.add_argument(
+        "--server-port", type=int, default=os.getenv("PORT", 8888), help="Port to run the MCP server on"
     )
     parser.add_argument(
         "--http-auth-jwks-uri",

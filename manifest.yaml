@@ -1,0 +1,12 @@
+applications:
+- name: arul-rmq-mcp
+  buildpacks:
+  - https://github.com/yannicklevederpvtl/uv-buildpack.git
+  memory: 256M
+  disk_quota: 512M
+  instances: 1
+  health-check-type: port
+  env:
+    PYTHON_VERSION_OVERRIDE: "3.13"
+    UV_CACHE_TTL: 7200
+    START_COMMAND_OVERRIDE: "uv run amq-mcp-server-rabbitmq --allow-mutative-tools --no-auth  --http"

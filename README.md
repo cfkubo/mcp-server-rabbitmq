@@ -125,6 +125,13 @@ pre-commit install
 pytest
 ```
 
+### Running it locally
+```
+uv run amq-mcp-server-rabbitmq --allow-mutative-tools --no-auth  --http
+```
+
+![demo](demo1.png)
+
 ### Code Quality
 
 This project uses ruff for linting and formatting:
